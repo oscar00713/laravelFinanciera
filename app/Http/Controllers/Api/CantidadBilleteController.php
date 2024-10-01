@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\CantidadBillete;
 use Illuminate\Http\Request;
-use App\Http\Requests\CantidadBilleteRequest;
 use Illuminate\Http\Response;
+use App\Models\CantidadBillete;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Casts\Json;
+use App\Http\Requests\CantidadBilleteRequest;
 use App\Http\Resources\CantidadBilleteResource;
 
 class CantidadBilleteController extends Controller
@@ -32,17 +34,22 @@ class CantidadBilleteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CantidadBillete $cantidadBillete): CantidadBillete
+    public function show($abono): JsonResponse
     {
-        return $cantidadBillete;
+
+        $cantidadBilleteRes = CantidadBillete::find($abono);
+
+        return response()->json($cantidadBilleteRes);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(CantidadBilleteRequest $request, CantidadBillete $cantidadBillete): CantidadBillete
+    public function update(CantidadBilleteRequest $request, $id): CantidadBillete
     {
+        $cantidadBillete = CantidadBillete::find($id);
         $cantidadBillete->update($request->validated());
+
 
         return $cantidadBillete;
     }

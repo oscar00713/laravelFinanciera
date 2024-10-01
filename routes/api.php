@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Api\ControlpagoController;
 use App\Http\Controllers\tools\UsersDataController;
 use App\Http\Controllers\Analisis\AnalisisController;
+use App\Http\Controllers\Api\CantidadBilleteController;
 use App\Http\Controllers\Api\RecuperacionDiumController;
 
 //Route::get('/user', function (Request $request) {
@@ -27,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
         '/control' => ControlpagoController::class,
         '/abonos' => AbonoController::class,
         '/recuperacionDias' => RecuperacionDiumController::class,
+        '/cantidad' => CantidadBilleteController::class,
     ]);
 
     Route::get('/dataUsers', [UsersDataController::class, 'index']);
