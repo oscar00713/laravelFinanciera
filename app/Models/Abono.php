@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Observers\AbonoObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
 /**
  * Class Abono
  *
@@ -24,6 +27,7 @@ use Illuminate\Database\Eloquent\Model;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
+
 class Abono extends Model
 {
 

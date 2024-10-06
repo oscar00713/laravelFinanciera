@@ -34,7 +34,7 @@ class AbonoController extends Controller
             ->with('user', 'controlpago')  // Cargar la relación 'user'
             //->orderByRaw("CASE WHEN fechaProximoAbono = CURDATE() THEN 0 ELSE 1 END ASC")
             ->orderByRaw(" CASE
-             WHEN fechaProximoAbono = CURDATE() AND estado != 3 THEN 0  -- Prioridad 1: Fecha de hoy (excepto si estado = 3)
+             WHEN fechaProximoAbono = date('now') AND estado != 3 THEN 0  -- Prioridad 1: Fecha de hoy (excepto si estado = 3)
         WHEN estado = 2 THEN 1   -- Prioridad 0: Estado 2 (primero)
 
         WHEN estado = 3 THEN 2   -- Prioridad 2: Estado 3 (siempre tercero)

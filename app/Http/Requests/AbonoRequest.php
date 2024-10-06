@@ -26,6 +26,7 @@ class AbonoRequest extends FormRequest
             'controlpago_id' => 'required',
             'fechaProximoAbono' => 'required',
             'montoAbono' => 'required',
+            'numAbono' => 'required',
             'interesAbono' => 'required',
             'estado' => 'required',
 

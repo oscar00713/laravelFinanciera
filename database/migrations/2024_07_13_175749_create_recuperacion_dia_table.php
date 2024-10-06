@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('recuperacion_dia', function (Blueprint $table) {
             $table->id();
             $table->decimal('montoCordobas', 9, 2)->unsigned()->default(0);
+            $table->decimal('montoRecolectadoDia', 9, 2)->unsigned()->default(0);
+            $table->string('descripcion')->nullable();
             $table->decimal('montoDolares', 9, 2)->unsigned()->default(0);
+            $table->decimal('represtamo', 9, 2)->unsigned()->default(0);
             $table->decimal('gastos', 9, 2)->unsigned()->default(0);
             $table->timestamps();
         });

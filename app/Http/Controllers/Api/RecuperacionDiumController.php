@@ -29,6 +29,9 @@ class RecuperacionDiumController extends Controller
         $data->getCollection()->transform(function ($resp) {
             return [
                 'id' => $resp->id,
+                'montoRecolectadoDia' => $resp->montoRecolectadoDia,
+                'represtamo' => $resp->represtamo,
+                'descripcion' => $resp->descripcion,
                 'montoCordobas' => $resp->montoCordobas,
                 'montoDolares' => $resp->montoDolares,
                 'gastos' => $resp->gastos,

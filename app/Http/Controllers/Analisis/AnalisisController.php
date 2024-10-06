@@ -14,27 +14,37 @@ class AnalisisController extends Controller
     public function obtenerAnalisisCredito(Request $request)
     {
         // Obtener las fechas del request, pero solo parsearlas si están presentes
-        $fechaInicio = $request->input('fechaInicio') ? Carbon::parse($request->input('fechaInicio')) : null;
-        $fechaFin = $request->input('fechaFin') ? Carbon::parse($request->input('fechaFin')) : null;
+        $fechaInicio = $request->input('fechaInicio') ? Carbon::parse($request->input('fechaInicio'))->format('Y-m-d H:i:s') : null;
+        $fechaFin = $request->input('fechaFin') ? Carbon::parse($request->input('fechaFin'))->format('Y-m-d H:i:s') : null;
 
+        // Iniciar la consulta base de ControlPago
         $analisisCredito = ControlPago::leftJoin('abonos', 'controlpagos.id', '=', 'abonos.controlpago_id')
             ->where('creditoTerminado', false);
 
+        // Filtrar por fechas si se proporcionaron
         if ($fechaInicio && $fechaFin) {
-            $analisisCredito->whereBetween('fechaContrato', [$fechaInicio, $fechaFin]);
+            $analisisCredito->whereBetween('controlpagos.fechaContrato', [$fechaInicio, $fechaFin]);
         }
-        $analisisCredito = $analisisCredito->selectRaw('
-        YEAR(controlpagos.fechaContrato) as year,
-        MONTH(controlpagos.fechaContrato) as month,
-       SUM(DISTINCT controlpagos.total) as totalPrestado, -- Evitar que se repita por abono
-        SUM(abonos.interesAbono) as totalGanancia,
-        SUM(abonos.montoAbono) as totalRecuperado,
-        (SUM(DISTINCT controlpagos.total) - COALESCE(SUM(abonos.montoAbono), 0)) as totalPendiente
 
+        // Realizar la consulta con SQLite usando strftime() para extraer el año y el mes
+        $analisisCredito = $analisisCredito->selectRaw('
+        strftime("%Y", controlpagos.fechaContrato) as year,
+        strftime("%m", controlpagos.fechaContrato) as month,
+        SUM(DISTINCT controlpagos.total) as totalPrestado,
+        COALESCE(SUM(abonos.interesAbono), 0) as totalGanancia,
+        COALESCE(SUM(abonos.montoAbono), 0) as totalRecuperado,
+        (SUM(DISTINCT controlpagos.total) - COALESCE(SUM(abonos.montoAbono), 0)) as totalPendiente
     ')
-            ->groupBy('year', 'month')
+            ->groupByRaw('strftime("%Y", controlpagos.fechaContrato), strftime("%m", controlpagos.fechaContrato)')
+            ->orderByRaw('year ASC, month ASC')  // Ordenar por año y mes ascendentemente
             ->get();
 
+        // Si no se encuentran datos, devolver un mensaje adecuado
+        if ($analisisCredito->isEmpty()) {
+            return response()->json(['message' => 'No data found'], 404);
+        }
+
+        // Retornar los datos en formato JSON
         return response()->json($analisisCredito);
     }
 
