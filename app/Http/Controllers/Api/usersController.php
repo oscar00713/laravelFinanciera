@@ -15,7 +15,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 
-class usersController extends Controller
+class UsersController extends Controller
 {
     public function index()
     {
