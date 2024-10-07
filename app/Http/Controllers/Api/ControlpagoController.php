@@ -81,8 +81,13 @@ class ControlpagoController extends Controller
         }
 
 
-        $validatedData['fechaContrato'] = Carbon::parse($validatedData['fechaContrato']);
-        $validatedData['primerCobro'] = Carbon::parse($validatedData['primerCobro']);
+        $validatedData['fechaContrato'] = Carbon::parse($validatedData['fechaContrato'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
+        $validatedData['primerCobro'] = Carbon::parse($validatedData['primerCobro'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD
+
         if ($validatedData['frecuencia'] == '1') {
             $validatedData['cuotas'] = $validatedData['plazo'] * 4;
         } else {
@@ -153,8 +158,12 @@ class ControlpagoController extends Controller
         unset($validatedData['user_name'], $validatedData['apellido'], $validatedData['user_id'], $validatedData['id']);
 
         // Convertir 'fechaContrato' a una instancia de Carbon
-        $validatedData['fechaContrato'] = Carbon::parse($validatedData['fechaContrato']);
-        $validatedData['primerCobro'] = Carbon::parse($validatedData['primerCobro']);
+        $validatedData['fechaContrato'] = Carbon::parse($validatedData['fechaContrato'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
+        $validatedData['primerCobro'] = Carbon::parse($validatedData['primerCobro'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD
 
         // Calcular cuotas y primerCobro según la frecuencia
         if ($validatedData['frecuencia'] == '1') {

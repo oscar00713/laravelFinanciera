@@ -81,7 +81,9 @@ class AbonoController extends Controller
         }
 
         // Convertir 'fechaContrato' a una instancia de Carbon
-        $validatedData['fechaProximoAbono'] = Carbon::parse($validatedData['fechaProximoAbono']);
+        $validatedData['fechaProximoAbono'] = Carbon::parse($validatedData['fechaProximoAbono'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
 
         $validatedData['total'] =  $validatedData['montoAbono'] - $validatedData['interesAbono'];
 
@@ -124,7 +126,9 @@ class AbonoController extends Controller
     {
         $validatedData = $request->validated();
 
-        $validatedData['fechaProximoAbono'] = Carbon::parse($validatedData['fechaProximoAbono']);
+        $validatedData['fechaProximoAbono'] = Carbon::parse($validatedData['fechaProximoAbono'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
 
         $validatedData['total'] =  $validatedData['montoAbono'] - $validatedData['interesAbono'];
 
