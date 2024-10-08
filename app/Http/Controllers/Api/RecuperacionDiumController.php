@@ -75,8 +75,10 @@ class RecuperacionDiumController extends Controller
         return $recuperacionDium;
     }
 
-    public function destroy(RecuperacionDium $recuperacionDium): Response
+    public function destroy($id): Response
     {
+        $recuperacionDium = RecuperacionDium::find($id);
+
         $recuperacionDium->delete();
 
         return response()->noContent();

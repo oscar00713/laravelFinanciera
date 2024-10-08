@@ -33,12 +33,13 @@ class UserRequest extends FormRequest
                 Rule::unique('users')->ignore($this->id),
             ],
             'email' => [
-                'required',
-                'string',
+                'nullable',
                 'email',
                 Rule::unique('users')->ignore($this->id),
             ],
             'telephone' => 'required',
+            'telefono' => 'nullable',
+            'ciclos' => 'required',
             'role_id' => 'required',
             'direccion' => 'required|string',
             'municipio' => 'required|string',
@@ -59,15 +60,12 @@ class UserRequest extends FormRequest
             'cedula.regex' => 'El formato de la cedula no es válido.',
             'cedula.unique' => 'El número de cedula ya está registrado. Por favor, utiliza uno diferente.',
             'apellido.required' => 'El apellido es obligatorio.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'Por favor, ingresa un correo electrónico válido.',
             'telephone.required' => 'El teléfono es obligatorio.',
             'role_id.required' => 'El rol es obligatorio.',
             'direccion.required' => 'La dirección es obligatoria.',
             'municipio.required' => 'El municipio es obligatorio.',
             'sexo.required' => 'El sexo es obligatorio.',
-            'fiador.required' => 'El fiador es obligatorio.',
-            'fiador_id.nullable' => 'El fiador es obligatorio.',
+            'ciclos.required' => 'El ciclo es obligatorio.',
 
             // Otros mensajes personalizados...
         ];

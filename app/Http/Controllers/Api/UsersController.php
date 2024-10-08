@@ -22,6 +22,7 @@ class UsersController extends Controller
         $users = QueryBuilder::for(User::class)
             ->allowedFilters(['name', 'apellido', 'status'])
             ->with('fiadorUser')  // Cargar la relación 'user'
+            ->where('role_id', '!=', 1)  // Omitir usuarios con role_id = 1
             ->orderBy('id', 'desc')           // Ordenar la tabla
             ->jsonPaginate();
 
@@ -33,6 +34,7 @@ class UsersController extends Controller
                 'email' => $user->email,
                 'role_id' => $user->role_id,
                 'fiador_name' => $user->fiadorUser->name ?? 'Sin fiador',
+                'fiador_apellido' => $user->fiadorUser->apellido ?? '',
                 'telephone' => $user->telephone,
                 'direccion' => $user->direccion,
                 'municipio' => $user->municipio,
@@ -83,7 +85,7 @@ class UsersController extends Controller
 
     public function destroy(User $user): Response
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;'); //Deshabilitar las restricciones de foreign keys
+        //Deshabilitar las restricciones de foreign keys
         $user->delete();
 
         return response()->noContent();

@@ -11,7 +11,7 @@ class UsersDataController extends Controller
 {
     public function index()
     {
-        $users = User::all();
+        $users = User::where('role_id', '!=', 1)->get();
         //cantidad de usuarios
         return response()->json($users);
     }
