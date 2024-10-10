@@ -13,6 +13,7 @@ use App\Http\Controllers\tools\UsersDataController;
 use App\Http\Controllers\Analisis\AnalisisController;
 use App\Http\Controllers\Api\CantidadBilleteController;
 use App\Http\Controllers\Api\RecuperacionDiumController;
+use App\Http\Controllers\historial\HistorialController;
 
 //Route::get('/user', function (Request $request) {
 
@@ -36,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/analisisDinero', [AnalisisController::class, 'obtenerAnalisisCredito']);
     Route::get('/analisisMontoPedente', [AnalisisController::class, 'montoPendinteUser']);
     Route::get('/analisisClientes', [AnalisisController::class, 'clientesReprestamos']);
+    Route::get('historial/{usuarioId}', [HistorialController::class, 'historial']);
 
     //add logout
     Route::post('/logout', [AuthController::class, 'logout']);

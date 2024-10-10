@@ -32,6 +32,7 @@ class ControlpagoRequest extends FormRequest
             'primerCobro' => 'required',
             'mes' => 'required',
             'montoPrestado' => 'required',
+            'creditoTerminado' => 'nullable',
             'interes' => 'required'
         ];
     }
