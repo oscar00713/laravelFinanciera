@@ -67,9 +67,8 @@ class AnalisisController extends Controller
 
         // 2. Clientes con represtamos que están pagando
         $clientesReprestamosCount = User::whereHas('controlPagos', function ($query) {
-            $query->where('creditoTerminado', false);  // Tienen un crédito pendiente
-        })->whereHas('controlPagos', function ($query) {
-            $query->where('creditoTerminado', true);  // Tienen al menos un crédito terminado (represtamo)
+            $query->where('creditoTerminado', false) // Condición de que el crédito no esté terminado
+                ->where('status', 2);              // Condición de que el status sea 2
         })->count();
 
         // 3. Clientes que no han hecho represtamos (prestaron pero no tienen préstamos activos)
