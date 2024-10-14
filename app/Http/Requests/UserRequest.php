@@ -39,20 +39,20 @@ class UserRequest extends FormRequest
             ],
             'telephone' => 'required',
             'telefono' => 'nullable',
-            'ciclos' => 'required',
+            'ciclos' => 'nullable',
             'role_id' => 'required',
             'direccion' => 'required|string',
             'municipio' => 'required|string',
-            'sexo' => 'required',
-            'fiador' => 'required',
+            'sexo' => 'nullable',
+            'fiador' => 'nullable',
             'fiador_id' => 'nullable',
             'password' => 'nullable|string',
+            'activo' => 'nullable',
         ];
     }
     public function messages()
     {
         return [
-            'email.unique' => 'El correo electrónico ya está registrado. Por favor, utiliza uno diferente.',
             'email.email' => 'Por favor, ingresa un correo electrónico válido.',
             'name.required' => 'El nombre es obligatorio.',
             'cedula.required' => 'El número de cedula es obligatorio.',
@@ -64,8 +64,6 @@ class UserRequest extends FormRequest
             'role_id.required' => 'El rol es obligatorio.',
             'direccion.required' => 'La dirección es obligatoria.',
             'municipio.required' => 'El municipio es obligatorio.',
-            'sexo.required' => 'El sexo es obligatorio.',
-            'ciclos.required' => 'El ciclo es obligatorio.',
 
             // Otros mensajes personalizados...
         ];

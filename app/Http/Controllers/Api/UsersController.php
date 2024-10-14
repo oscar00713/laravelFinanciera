@@ -20,7 +20,11 @@ class UsersController extends Controller
     public function index()
     {
         $users = QueryBuilder::for(User::class)
-            ->allowedFilters(['name', 'apellido', 'status'])
+            ->allowedFilters([
+                'name',
+                'apellido',
+                AllowedFilter::exact('activo')->default(true),
+            ])
             ->with('fiadorUser')  // Cargar la relación 'user'
             ->where('role_id', '!=', 1)  // Omitir usuarios con role_id = 1
             ->orderBy('id', 'desc')           // Ordenar la tabla
@@ -31,14 +35,18 @@ class UsersController extends Controller
             return [
                 'id' => $user->id,
                 'name' => $user->name,
+                'apellido' => $user->apellido,
                 'email' => $user->email,
                 'role_id' => $user->role_id,
                 'fiador_name' => $user->fiadorUser->name ?? 'Sin fiador',
                 'fiador_apellido' => $user->fiadorUser->apellido ?? '',
                 'telephone' => $user->telephone,
+                'telefono' => $user->telefono,
                 'direccion' => $user->direccion,
                 'municipio' => $user->municipio,
                 'sexo' => $user->sexo,
+                'activo' => $user->activo,
+                'cedula' => $user->cedula,
                 // Añadir otros campos que necesites
             ];
         });

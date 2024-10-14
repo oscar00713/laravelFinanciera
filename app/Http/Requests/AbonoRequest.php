@@ -27,6 +27,7 @@ class AbonoRequest extends FormRequest
             'fechaProximoAbono' => 'required',
             'montoAbono' => 'required',
             'numAbono' => 'required',
+            'fechaAbono' => 'required',
             'interesAbono' => 'required',
             'estado' => 'required',
 
@@ -42,6 +43,7 @@ class AbonoRequest extends FormRequest
             'interesAbono.required' => 'El campo interes Abonado es requerido',
             'montoAbono.required' => 'El campo Monto Abonado es requerido',
             'estado.required' => 'El campo Estado es requerido',
+            'fechaAbono' => 'El campo Fecha Abonado es requerido',
         ];
     }
 }

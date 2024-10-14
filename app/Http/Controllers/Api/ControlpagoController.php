@@ -30,6 +30,7 @@ class ControlpagoController extends Controller
                             ->orWhere('apellido', 'like', "%{$value}%");
                     });
                 }),
+                AllowedFilter::exact('creditoTerminado')->default(false),
             ])
             ->with('user')  // Cargar la relación 'user'
             ->orderBy('id', 'desc')           // Ordenar la tabla

@@ -32,6 +32,9 @@ class AbonoController extends Controller
                 }),
             ])
             ->with('user', 'controlpago')  // Cargar la relación 'user'
+            ->whereHas('controlpago', function ($query) {
+                $query->where('creditoTerminado', false); // Filtrar abonos cuyo control de pago no esté terminado
+            })
             //->orderByRaw("CASE WHEN fechaProximoAbono = CURDATE() THEN 0 ELSE 1 END ASC")
             ->orderByRaw(" CASE
              WHEN fechaProximoAbono = date('now') AND estado != 3 THEN 0  -- Prioridad 1: Fecha de hoy (excepto si estado = 3)
@@ -55,6 +58,7 @@ class AbonoController extends Controller
                 'controlpago_total' => $abono->controlpago->total,
                 'numAbono' => $abono->numAbono,
                 'fechaProximoAbono' => $abono->fechaProximoAbono,
+                'fechaAbono' => $abono->fechaAbono,
                 'estado' => $abono->estado,
                 'montoAbonado' => $abono->montoAbono,
                 'interesAbono' => $abono->interesAbono,
@@ -84,6 +88,9 @@ class AbonoController extends Controller
         $validatedData['fechaProximoAbono'] = Carbon::parse($validatedData['fechaProximoAbono'])
             ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
             ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
+        $validatedData['fechaAbono'] = Carbon::parse($validatedData['fechaAbono'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
 
         $validatedData['total'] =  $validatedData['montoAbono'] - $validatedData['interesAbono'];
 
@@ -110,6 +117,7 @@ class AbonoController extends Controller
             'numAbono' => $abonoRes->numAbono,
             'fechaProximoAbono' => $abonoRes->fechaProximoAbono,
             'estado' => $abonoRes->estado,
+            'fechaAbono' => $abonoRes->fechaAbono,
             'montoAbono' => $abonoRes->montoAbono,
             'interesAbono' => $abonoRes->interesAbono,
             'capital' => $abonoRes->total,
@@ -127,6 +135,10 @@ class AbonoController extends Controller
         $validatedData = $request->validated();
 
         $validatedData['fechaProximoAbono'] = Carbon::parse($validatedData['fechaProximoAbono'])
+            ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
+            ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
+
+        $validatedData['fechaAbono'] = Carbon::parse($validatedData['fechaAbono'])
             ->setTimezone('America/Managua') // Asegúrate de que la zona horaria sea correcta
             ->format('Y-m-d'); // Formatea la fecha a YYYY-MM-DD;
 
