@@ -21,8 +21,13 @@ class UsersController extends Controller
     {
         $users = QueryBuilder::for(User::class)
             ->allowedFilters([
-                'name',
-                'apellido',
+                AllowedFilter::callback('name', function ($query, $value) {
+                    $query->where(function ($query) use ($value) {
+                        // Buscar tanto en 'name' como en 'apellido'
+                        $query->where('name', 'like', "%{$value}%")
+                            ->orWhere('apellido', 'like', "%{$value}%");
+                    });
+                }),
                 AllowedFilter::exact('activo')->default(true),
             ])
             ->with('fiadorUser')  // Cargar la relación 'user'
