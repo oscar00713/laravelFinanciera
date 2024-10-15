@@ -40,7 +40,7 @@ class ControlpagoController extends Controller
         $controls->getCollection()->transform(function ($control) {
             return [
                 'id' => $control->id,
-                'user_id' => $control->user_id,
+                'user_id' => $control->usuario_id,
                 'user_name' => $control->user->name,
                 'apellido' => $control->user->apellido,
                 'concepto' => $control->concepto,

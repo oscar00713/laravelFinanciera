@@ -49,31 +49,24 @@ class AbonoObserver
      */
     public function updated(Abono $abono): void
     {
-        // Obtener el valor anterior y el nuevo valor de la fecha
+        // Obtener la fecha anterior y la nueva fecha del abono
         $fechaAnterior = Carbon::parse($abono->getOriginal('fechaAbono'))
-            ->setTimezone('America/Managua')->startOfDay();
+            ->setTimezone('America/Managua')
+            ->startOfDay();
         $fechaActual = Carbon::parse($abono->fechaAbono)
-            ->setTimezone('America/Managua')->startOfDay();
+            ->setTimezone('America/Managua')
+            ->startOfDay();
+        $fechaHoy = Carbon::now('America/Managua')->startOfDay();
 
-        // Ajustar el registro en RecuperacionDium
-        if ($fechaAnterior->isToday() && !$fechaActual->isToday()) {
-            // Si se cambia de hoy a otra fecha, disminuimos el monto
-            $registroDia = RecuperacionDium::whereDate('created_at', $fechaAnterior)->first();
-            if ($registroDia) {
-                $registroDia->montoRecolectadoDia -= $abono->montoAbono;
-                $registroDia->save();
-            }
-        } elseif (!$fechaAnterior->isToday() && $fechaActual->isToday()) {
-            // Si se cambia de otra fecha a hoy, aumentamos el monto
-            $this->updateRecuperacionDium($abono);
-        } elseif ($fechaAnterior->isToday() && $fechaActual->isToday()) {
-            // Si se actualiza la fecha pero sigue siendo hoy, solo actualizamos el monto
-            $registroDia = RecuperacionDium::whereDate('created_at', $fechaActual)->first();
-            if ($registroDia) {
-                $registroDia->montoRecolectadoDia -= $abono->getOriginal('montoAbono');
-                $registroDia->montoRecolectadoDia += $abono->montoAbono;
-                $registroDia->save();
-            }
+        if ($fechaAnterior->eq($fechaHoy) && !$fechaActual->eq($fechaHoy)) {
+            // Si el abono se cambió de hoy a otra fecha, descontamos el monto
+            $this->updateRecuperacionDium($abono, 'removed');
+        } elseif (!$fechaAnterior->eq($fechaHoy) && $fechaActual->eq($fechaHoy)) {
+            // Si el abono se cambió de otra fecha a hoy, sumamos el monto
+            $this->updateRecuperacionDium($abono, 'created');
+        } elseif ($fechaAnterior->eq($fechaHoy) && $fechaActual->eq($fechaHoy)) {
+            // Si la fecha sigue siendo hoy, actualizamos el monto recolectado
+            $this->updateRecuperacionDium($abono, 'updated');
         }
     }
 
@@ -82,25 +75,13 @@ class AbonoObserver
      */
     public function deleted(Abono $abono): void
     {
-        // Obtener la fecha del abono eliminado
         $fechaAbono = Carbon::parse($abono->fechaAbono)
             ->setTimezone('America/Managua')
             ->startOfDay();
+        $fechaHoy = Carbon::now('America/Managua')->startOfDay();
 
-        // Buscar el registro de RecuperacionDium correspondiente
-        $registroDia = RecuperacionDium::whereDate('created_at', $fechaAbono)->first();
-
-        if ($registroDia) {
-            // Reducir el monto recolectado del día por el monto del abono eliminado
-            $registroDia->montoRecolectadoDia -= $abono->montoAbono;
-
-            // Si el monto recolectado es 0 o menor, podrías considerar eliminar el registro
-            if ($registroDia->montoRecolectadoDia <= 0) {
-                $registroDia->delete();
-            } else {
-                // Guardar los cambios si el monto aún es positivo
-                $registroDia->save();
-            }
+        if ($fechaAbono->eq($fechaHoy)) {
+            $this->updateRecuperacionDium($abono, 'removed');
         }
     }
 
@@ -123,23 +104,34 @@ class AbonoObserver
     /**
      * Update the RecuperacionDium record based on today's abono.
      */
-    private function updateRecuperacionDium(Abono $abono): void
+    private function updateRecuperacionDium(Abono $abono, string $action): void
     {
-        // Ajustar la zona horaria según tus necesidades
         $fechaHoy = Carbon::now('America/Managua')->startOfDay();
 
         // Buscar si ya existe un registro del día para la fecha actual
         $registroDia = RecuperacionDium::whereDate('created_at', $fechaHoy)->first();
 
         if ($registroDia) {
-            // Si ya existe, actualizamos el monto recolectado
-            $registroDia->montoRecolectadoDia += $abono->montoAbono;
-            $registroDia->save();
-        } else {
-            // Si no existe, creamos un nuevo registro para el día
+            if ($action === 'created') {
+                $registroDia->montoRecolectadoDia += $abono->montoAbono;
+            } elseif ($action === 'removed') {
+                $registroDia->montoRecolectadoDia -= $abono->montoAbono;
+            } elseif ($action === 'updated') {
+                $registroDia->montoRecolectadoDia -= $abono->getOriginal('montoAbono');
+                $registroDia->montoRecolectadoDia += $abono->montoAbono;
+            }
+
+            // Guardar los cambios si el monto es positivo, si no, eliminar el registro
+            if ($registroDia->montoRecolectadoDia > 0) {
+                $registroDia->save();
+            } else {
+                $registroDia->delete();
+            }
+        } else if ($action === 'created') {
+            // Crear un nuevo registro si no existe y la acción es "created"
             RecuperacionDium::create([
                 'montoRecolectadoDia' => $abono->montoAbono,
-                'created_at' => $fechaHoy, // Guardar la fecha correcta
+                'created_at' => $fechaHoy,
             ]);
         }
     }

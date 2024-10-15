@@ -43,15 +43,15 @@ class AbonoController extends Controller
         WHEN estado = 3 THEN 2   -- Prioridad 2: Estado 3 (siempre tercero)
         ELSE 3  -- Otros casos
     END ASC")
-            ->orderBy('fechaProximoAbono', 'asc') // Luego por fechaProximoAbono en orden ascendente
-            ->orderBy('id', 'desc')           // Ordenar la tabla
+            ->orderBy('numAbono', 'desc') // Luego por fechaProximoAbono en orden ascendente
+            ->orderBy('fechaProximoAbono', 'desc')           // Ordenar la tabla
             ->jsonPaginate();
 
         // Modificar la estructura de la respuesta
         $Abonos->getCollection()->transform(function ($abono) {
             return [
                 'id' => $abono->id,
-                'user_id' => $abono->user_id,
+                'user_id' => $abono->usuario_id,
                 'user_name' => $abono->user->name,
                 'apellido' => $abono->user->apellido,
                 'controlpago_id' => $abono->controlpago_id,

@@ -43,6 +43,7 @@ class AbonoRequest extends FormRequest
             'interesAbono.required' => 'El campo interes Abonado es requerido',
             'montoAbono.required' => 'El campo Monto Abonado es requerido',
             'estado.required' => 'El campo Estado es requerido',
+            'numAbono.required' => 'El campo Numero Abono es requerido',
             'fechaAbono' => 'El campo Fecha Abonado es requerido',
         ];
     }

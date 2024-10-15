@@ -13,7 +13,7 @@ class HistorialController extends Controller
         $usuario = User::with(['controlpagos' => function ($query) {
             $query->select('id', 'usuario_id', 'status', 'total', 'fechaContrato', 'creditoTerminado');
         }, 'controlpagos.abonos' => function ($query) {
-            $query->select('id', 'controlpago_id', 'montoAbono', 'interesAbono', 'numAbono', 'created_at', 'estado');
+            $query->select('id', 'controlpago_id', 'montoAbono', 'interesAbono', 'numAbono', 'fechaAbono', 'estado');
         }])->find($usuarioId);
 
         $usuario->controlpagos->each(function ($controlpago) {
