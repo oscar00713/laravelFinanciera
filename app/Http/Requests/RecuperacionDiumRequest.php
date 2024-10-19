@@ -22,12 +22,16 @@ class RecuperacionDiumRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'montoCordobas' => 'required',
+            'montoCordobas' => 'nullable',
             'montoRecolectadoDia' => 'required',
-            'represtamo' => 'required',
+            'represtamo' => 'nullable',
             'descripcion' => 'nullable',
-            'montoDolares' => 'required',
+            'montoDolares' => 'nullable',
             'gastos' => 'required',
+            'ganancia' => 'nullable',
+            'suministrado' => 'nullable',
+            'billetera' => 'nullable',
+
         ];
     }
 }

@@ -30,6 +30,8 @@ class AbonoRequest extends FormRequest
             'fechaAbono' => 'required',
             'interesAbono' => 'required',
             'estado' => 'required',
+            'efectivo' => 'nullable',
+            'billetera' => 'nullable',
 
         ];
     }

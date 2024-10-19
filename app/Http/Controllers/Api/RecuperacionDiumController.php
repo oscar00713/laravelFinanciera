@@ -31,6 +31,10 @@ class RecuperacionDiumController extends Controller
                 'id' => $resp->id,
                 'montoRecolectadoDia' => $resp->montoRecolectadoDia,
                 'represtamo' => $resp->represtamo,
+                'suministrado' => $resp->suministrado,
+                'billetera' => $resp->billetera,
+                'total' => $resp->total,
+                'ganancia' => $resp->ganancia,
                 'descripcion' => $resp->descripcion,
                 'montoCordobas' => $resp->montoCordobas,
                 'montoDolares' => $resp->montoDolares,
@@ -70,7 +74,32 @@ class RecuperacionDiumController extends Controller
     public function update(RecuperacionDiumRequest $request, $id): RecuperacionDium
     {
         $recuperacionDium = RecuperacionDium::find($id);
-        $recuperacionDium->update($request->validated());
+
+        if (!$recuperacionDium) {
+            abort(404, 'Recuperación no encontrada.');
+        }
+
+        $validatedData = $request->validated();
+
+        // Iniciar el valor del total con el total actual
+        $validatedData['total'] = floatval($recuperacionDium->total);
+
+        // Manejar cambios en 'suministrado'
+        if (isset($validatedData['suministrado']) && $recuperacionDium->getOriginal('suministrado') != $validatedData['suministrado']) {
+            // Restar el valor anterior y sumar el nuevo
+            $validatedData['total'] -= floatval($recuperacionDium->getOriginal('suministrado'));
+            $validatedData['total'] += floatval($validatedData['suministrado']);
+        }
+
+        // Manejar cambios en 'gastos'
+        if (isset($validatedData['gastos']) && $recuperacionDium->getOriginal('gastos') != $validatedData['gastos']) {
+            // Sumar el valor anterior y restar el nuevo
+            $validatedData['total'] += floatval($recuperacionDium->getOriginal('gastos'));
+            $validatedData['total'] -= floatval($validatedData['gastos']);
+        }
+
+        // Actualizar el registro con los datos validados
+        $recuperacionDium->update($validatedData);
 
         return $recuperacionDium;
     }

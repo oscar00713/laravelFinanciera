@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Abono;
+use App\Models\Controlpago;
 use App\Observers\AbonoObserver;
+use App\Observers\ControlObserver;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
 
         Abono::observe(AbonoObserver::class);
+        Controlpago::observe(ControlObserver::class);
 
         if ($this->app->environment('production')) {
             URL::forceScheme('https');

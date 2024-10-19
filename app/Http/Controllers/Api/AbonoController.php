@@ -36,13 +36,18 @@ class AbonoController extends Controller
                 $query->where('creditoTerminado', false); // Filtrar abonos cuyo control de pago no esté terminado
             })
             //->orderByRaw("CASE WHEN fechaProximoAbono = CURDATE() THEN 0 ELSE 1 END ASC")
-            ->orderByRaw(" CASE
-             WHEN fechaProximoAbono = date('now') AND estado != 3 THEN 0  -- Prioridad 1: Fecha de hoy (excepto si estado = 3)
-        WHEN estado = 2 THEN 1   -- Prioridad 0: Estado 2 (primero)
+            ->orderByRaw(
+                "
+            CASE
+                WHEN created_at = date('now') THEN 0  -- Prioridad 0: Abonos creados hoy
+                WHEN fechaProximoAbono = date('now') AND estado != 3 THEN 1  -- Prioridad 1: Fecha de hoy (excepto si estado = 3)
+                WHEN estado = 2 THEN 2   -- Prioridad 0: Estado 2 (primero)
 
-        WHEN estado = 3 THEN 2   -- Prioridad 2: Estado 3 (siempre tercero)
-        ELSE 3  -- Otros casos
-    END ASC")
+                WHEN estado = 3 THEN 3   -- Prioridad 2: Estado 3 (siempre tercero)
+            ELSE 3  -- Otros casos
+            END ASC"
+            )
+            ->orderBy('created_at', 'desc')  // Luego ordenar por fecha de creación más reciente
             ->orderBy('numAbono', 'desc') // Luego por fechaProximoAbono en orden ascendente
             ->orderBy('fechaProximoAbono', 'desc')           // Ordenar la tabla
             ->jsonPaginate();
@@ -59,6 +64,8 @@ class AbonoController extends Controller
                 'numAbono' => $abono->numAbono,
                 'fechaProximoAbono' => $abono->fechaProximoAbono,
                 'fechaAbono' => $abono->fechaAbono,
+                'efectivo' => $abono->efectivo,
+                'billetera' => $abono->billetera,
                 'estado' => $abono->estado,
                 'montoAbonado' => $abono->montoAbono,
                 'interesAbono' => $abono->interesAbono,
@@ -118,6 +125,8 @@ class AbonoController extends Controller
             'fechaProximoAbono' => $abonoRes->fechaProximoAbono,
             'estado' => $abonoRes->estado,
             'fechaAbono' => $abonoRes->fechaAbono,
+            'efectivo' => $abonoRes->efectivo,
+            'billetera' => $abonoRes->billetera,
             'montoAbono' => $abonoRes->montoAbono,
             'interesAbono' => $abonoRes->interesAbono,
             'capital' => $abonoRes->total,

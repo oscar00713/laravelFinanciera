@@ -28,12 +28,17 @@ class AbonoObserver
 
             if ($registroDia) {
                 // Si ya existe, actualizamos el monto recolectado
-                $registroDia->montoRecolectadoDia += $abono->montoAbono;
+                $registroDia->montoRecolectadoDia += $abono->efectivo;
+                $registroDia->ganancia += $abono->interesAbono;
+                $registroDia->billetera += $abono->billetera;
+                $registroDia->total += $abono->efectivo;
                 $registroDia->save();
             } else {
                 // Si no existe, creamos un nuevo registro para el día
                 RecuperacionDium::create([
-                    'montoRecolectadoDia' => $abono->montoAbono,
+                    'montoRecolectadoDia' => $abono->efectivo,
+                    'total' => $abono->efectivo,
+                    'ganancia' => $abono->interesAbono,
                     'created_at' => $fechaHoy, // Guardar la fecha correcta
                 ]);
             }
@@ -113,24 +118,38 @@ class AbonoObserver
 
         if ($registroDia) {
             if ($action === 'created') {
-                $registroDia->montoRecolectadoDia += $abono->montoAbono;
+                $registroDia->montoRecolectadoDia += $abono->efectivo;
+                $registroDia->ganancia += $abono->interesAbono;
+                $registroDia->billetera += $abono->billetera;
+                $registroDia->total += $abono->efectivo;
             } elseif ($action === 'removed') {
-                $registroDia->montoRecolectadoDia -= $abono->montoAbono;
+                $registroDia->montoRecolectadoDia -= $abono->efectivo;
+                $registroDia->ganancia -= $abono->interesAbono;
+                $registroDia->billetera -= $abono->billetera;
+                $registroDia->total -= $abono->efectivo;
             } elseif ($action === 'updated') {
-                $registroDia->montoRecolectadoDia -= $abono->getOriginal('montoAbono');
-                $registroDia->montoRecolectadoDia += $abono->montoAbono;
+                $registroDia->montoRecolectadoDia -= $abono->getOriginal('efectivo');
+                $registroDia->montoRecolectadoDia += $abono->efectivo;
+                $registroDia->ganancia -= $abono->getOriginal('interesAbono');
+                $registroDia->ganancia += $abono->interesAbono;
+                $registroDia->billetera -= $abono->getOriginal('billetera');
+                $registroDia->billetera += $abono->billetera;
+                $registroDia->total -= $abono->getOriginal('efectivo');
+                $registroDia->total += $abono->efectivo;
             }
 
             // Guardar los cambios si el monto es positivo, si no, eliminar el registro
             if ($registroDia->montoRecolectadoDia > 0) {
                 $registroDia->save();
-            } else {
-                $registroDia->delete();
             }
+            // } else {
+            //     $registroDia->delete();
+            // }
         } else if ($action === 'created') {
             // Crear un nuevo registro si no existe y la acción es "created"
             RecuperacionDium::create([
-                'montoRecolectadoDia' => $abono->montoAbono,
+                'montoRecolectadoDia' => $abono->efectivo,
+                'ganancia' => $abono->interesAbono,
                 'created_at' => $fechaHoy,
             ]);
         }
