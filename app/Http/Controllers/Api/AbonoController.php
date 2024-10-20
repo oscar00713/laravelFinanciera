@@ -30,6 +30,40 @@ class AbonoController extends Controller
                             ->orWhere('apellido', 'like', "%{$value}%");
                     });
                 }),
+                AllowedFilter::exact('estado')->ignore(null),
+                AllowedFilter::callback('created_at_range', function ($query, $value) {
+                    // Filtrar por rango de fechas de creación
+                    // Verificar si $value es un array
+                    if (is_array($value)) {
+                        $dates = $value;
+                    } else {
+                        // Si $value es una cadena, usar explode para separarlo por comas
+                        $dates = explode(',', $value);
+                    }
+
+                    // Asegurarse de que hay dos fechas válidas
+                    if (isset($dates[0]) && isset($dates[1])) {
+                        $start = Carbon::parse($dates[0])->startOfDay();
+                        $end = Carbon::parse($dates[1])->endOfDay();
+                        $query->whereBetween('created_at', [$start, $end]);
+                    }
+                }),
+                AllowedFilter::callback('fechaProximoAbono_range', function ($query, $value) {
+                    // Filtrar por rango de fechas de próximo abono
+                    // Verificar si $value es un array
+                    if (is_array($value)) {
+                        $dates = $value;
+                    } else {
+                        // Si $value es una cadena, usar explode para separarlo por comas
+                        $dates = explode(',', $value);
+                    }
+
+                    if (isset($dates[0]) && isset($dates[1])) {
+                        $start = Carbon::parse($dates[0])->startOfDay();
+                        $end = Carbon::parse($dates[1])->endOfDay();
+                        $query->whereBetween('fechaProximoAbono', [$start, $end]);
+                    }
+                }),
             ])
             ->with('user', 'controlpago')  // Cargar la relación 'user'
             ->whereHas('controlpago', function ($query) {
@@ -39,12 +73,12 @@ class AbonoController extends Controller
             ->orderByRaw(
                 "
             CASE
-                WHEN created_at = date('now') THEN 0  -- Prioridad 0: Abonos creados hoy
+                WHEN date(created_at) = date('now') THEN 0  -- Prioridad 0: Abonos creados hoy
                 WHEN fechaProximoAbono = date('now') AND estado != 3 THEN 1  -- Prioridad 1: Fecha de hoy (excepto si estado = 3)
-                WHEN estado = 2 THEN 2   -- Prioridad 0: Estado 2 (primero)
+                WHEN estado = 2 THEN 2   -- Prioridad 0: Estado 2 (segundo)
 
-                WHEN estado = 3 THEN 3   -- Prioridad 2: Estado 3 (siempre tercero)
-            ELSE 3  -- Otros casos
+                WHEN estado = 3 THEN 3   -- Prioridad 2: Estado 3 ( tercero)
+            ELSE 4  -- Otros casos
             END ASC"
             )
             ->orderBy('created_at', 'desc')  // Luego ordenar por fecha de creación más reciente
