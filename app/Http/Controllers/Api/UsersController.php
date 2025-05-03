@@ -11,6 +11,7 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
@@ -25,7 +26,8 @@ class UsersController extends Controller
                     $query->where(function ($query) use ($value) {
                         // Buscar tanto en 'name' como en 'apellido'
                         $query->where('name', 'like', "%{$value}%")
-                            ->orWhere('apellido', 'like', "%{$value}%");
+                            ->orWhere('apellido', 'like', "%{$value}%")
+                            ->orWhere('cedula', 'like', "%{$value}%");
                     });
                 }),
                 AllowedFilter::exact('activo')->default(true),
@@ -96,11 +98,11 @@ class UsersController extends Controller
         return $user;
     }
 
-    public function destroy(User $user): Response
+    public function destroy(User $user): JsonResponse
     {
         //Deshabilitar las restricciones de foreign keys
         $user->delete();
 
-        return response()->noContent();
+        return response()->json(['message' => 'Usuario eliminado correctamente']);
     }
 }
