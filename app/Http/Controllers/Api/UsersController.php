@@ -33,7 +33,7 @@ class UsersController extends Controller
                 AllowedFilter::exact('activo')->default(true),
             ])
             ->with('fiadorUser')  // Cargar la relación 'user'
-            ->where('role_id', '!=', 1)  // Omitir usuarios con role_id = 1
+            // ->where('role_id', '!=', 1)  // Omitir usuarios con role_id = 1
             ->orderBy('id', 'desc')           // Ordenar la tabla
             ->jsonPaginate();
 
