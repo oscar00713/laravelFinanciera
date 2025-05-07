@@ -151,7 +151,7 @@ class ControlpagoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ControlpagoRequest $request, $id): Controlpago
+    public function update(ControlpagoRequest $request, $id): JsonResponse
     {
         // Validar los datos del request
         $validatedData = $request->validated();
@@ -188,9 +188,28 @@ class ControlpagoController extends Controller
         $controlpago = Controlpago::find($id);
 
         $controlpago->update($validatedData);
-
+        $controlpago->load('user');
         // Devolver el modelo actualizado
-        return $controlpago;
+        return response()->json([
+            'id' => $controlpago->id,
+            'user_name' => $controlpago->user->name,
+            'apellido' => $controlpago->user->apellido,
+            'concepto' => $controlpago->concepto,
+            'frecuencia' => $controlpago->frecuencia,
+            'plazo' => $controlpago->plazo,
+            'cuotas' => $controlpago->cuotas,
+            'status' => $controlpago->status,
+            'diaCobro' => $controlpago->diaCobro,
+            'fechaContrato' => $controlpago->fechaContrato,
+            'mes' => $controlpago->mes,
+            'montoPrestado' => $controlpago->montoPrestado,
+            'interes' => $controlpago->interes,
+            'primerCobro' => $controlpago->primerCobro,
+            'cuota' => $controlpago->cuota,
+            'totalInteres' => $controlpago->totalInteres,
+            'creditoTerminado' => $controlpago->creditoTerminado,
+            'total' => $controlpago->total,
+        ]);
     }
 
     public function destroy($id): JsonResponse
