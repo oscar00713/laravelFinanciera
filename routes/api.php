@@ -14,6 +14,7 @@ use App\Http\Controllers\Analisis\AnalisisController;
 use App\Http\Controllers\Api\CantidadBilleteController;
 use App\Http\Controllers\Api\RecuperacionDiumController;
 use App\Http\Controllers\historial\HistorialController;
+use App\Http\Controllers\tools\ReporteFrecuenciaPagoController;
 
 //Route::get('/user', function (Request $request) {
 
@@ -43,8 +44,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+Route::get('/reportes/frecuencia', [ReporteFrecuenciaPagoController::class, 'getByFrecuencia']);
 
+Route::get('/reportes/fechaPago', [ReporteFrecuenciaPagoController::class, 'getByFechaPago']);
 
-
+Route::get('/reportes/general', [ReporteFrecuenciaPagoController::class, 'index']);
 
 Route::post('/login', [AuthController::class, 'login']);

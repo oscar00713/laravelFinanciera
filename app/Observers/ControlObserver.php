@@ -39,7 +39,7 @@ class ControlObserver
                 // Si no existe, creamos un nuevo registro para el día
                 RecuperacionDium::create([
                     'represtamo' => $controlpago->montoPrestado,
-                    'total' => $registroDia->montoRecolectadoDia - $controlpago->montoPrestado + $controlpago->suministrado - $controlpago->gastos,
+                    'total' => ($registroDia ? $registroDia->montoRecolectadoDia : 0) - $controlpago->montoPrestado + $controlpago->suministrado - $controlpago->gastos,
                     'created_at' => $fechaHoy, // Guardar la fecha correcta
                 ]);
             } else {
