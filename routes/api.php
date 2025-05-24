@@ -40,14 +40,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/analisisClientes', [AnalisisController::class, 'clientesReprestamos']);
     Route::get('historial/{usuarioId}', [HistorialController::class, 'historial']);
 
+    //reportes
+    Route::get('/reportes/frecuencia', [ReporteFrecuenciaPagoController::class, 'getByFrecuencia']);
+
+    Route::get('/reportes/fechaPago', [ReporteFrecuenciaPagoController::class, 'getByFechaPago']);
+
+    Route::get('/reportes/general', [ReporteFrecuenciaPagoController::class, 'index']);
+
     //add logout
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
-Route::get('/reportes/frecuencia', [ReporteFrecuenciaPagoController::class, 'getByFrecuencia']);
 
-Route::get('/reportes/fechaPago', [ReporteFrecuenciaPagoController::class, 'getByFechaPago']);
-
-Route::get('/reportes/general', [ReporteFrecuenciaPagoController::class, 'index']);
 
 Route::post('/login', [AuthController::class, 'login']);
